@@ -1,3 +1,10 @@
+import { sparqlEscapeUri } from "mu";
+import {
+  INPUT_RESOURCES_GRAPH,
+  INPUT_DATA_GRAPH,
+  OUTPUT_GRAPH,
+} from "./environment";
+
 const prefixes = `
 PREFIX besluit: <http://data.vlaanderen.be/ns/besluit#>
 PREFIX eli:     <http://data.europa.eu/eli/ontology#>
@@ -6,12 +13,11 @@ PREFIX prov:    <http://www.w3.org/ns/prov#>
 PREFIX epvoc:   <https://data.europarl.europa.eu/def/epvoc#>
 `;
 
-const inputResourcesGraph =
-  "http://mu.semte.ch/graphs/oslo-decisions/ghent/besluit";
-const inputDataGraph = "http://mu.semte.ch/graphs/oslo-decisions/landing";
-const outputGraph = "http://mu.semte.ch/graphs/eli-decisions/ghent";
+const inputResourcesGraph = sparqlEscapeUri(INPUT_RESOURCES_GRAPH);
+const inputDataGraph = sparqlEscapeUri(INPUT_DATA_GRAPH);
+const outputGraph = sparqlEscapeUri(OUTPUT_GRAPH);
 
-export function buildResourceInsertQuery(limit, offset) {
+function buildResourceInsertQuery(limit, offset) {
   return `${prefixes}
     INSERT {
       GRAPH <${outputGraph}> {
@@ -35,7 +41,7 @@ export function buildResourceInsertQuery(limit, offset) {
     }`;
 }
 
-export function buildTitleInsertQuery(limit, offset) {
+function buildTitleInsertQuery(limit, offset) {
   return `${prefixes}
     INSERT {
       GRAPH <${outputGraph}> {
@@ -59,7 +65,7 @@ export function buildTitleInsertQuery(limit, offset) {
     }`;
 }
 
-export function buildDescriptionInsertQuery(limit, offset) {
+function buildDescriptionInsertQuery(limit, offset) {
   return `${prefixes}
     INSERT {
       GRAPH <${outputGraph}> {
@@ -81,7 +87,7 @@ export function buildDescriptionInsertQuery(limit, offset) {
     }`;
 }
 
-export function buildDateInsertQuery(limit, offset) {
+function buildDateInsertQuery(limit, offset) {
   return `${prefixes}
     INSERT {
       GRAPH <${outputGraph}> {
@@ -104,7 +110,7 @@ export function buildDateInsertQuery(limit, offset) {
     }`;
 }
 
-export function buildLanguageInsertQuery(limit, offset) {
+function buildLanguageInsertQuery(limit, offset) {
   return `${prefixes}
     INSERT {
       GRAPH <${outputGraph}> {
@@ -125,7 +131,7 @@ export function buildLanguageInsertQuery(limit, offset) {
     }`;
 }
 
-export function buildContentInsertQuery(limit, offset) {
+function buildContentInsertQuery(limit, offset) {
   return `${prefixes}
     INSERT {
       GRAPH <${outputGraph}> {
@@ -146,7 +152,7 @@ export function buildContentInsertQuery(limit, offset) {
     }`;
 }
 
-export function buildCreatorInsertQuery(limit, offset) {
+function buildCreatorInsertQuery(limit, offset) {
   return `${prefixes}
     INSERT {
       GRAPH <${outputGraph}> {
@@ -168,7 +174,7 @@ export function buildCreatorInsertQuery(limit, offset) {
     }`;
 }
 
-export function buildContributorInsertQuery(limit, offset) {
+function buildContributorInsertQuery(limit, offset) {
   return `${prefixes}
     INSERT {
       GRAPH <${outputGraph}> {
@@ -191,3 +197,14 @@ export function buildContributorInsertQuery(limit, offset) {
       BIND(URI(CONCAT(STR(?besluit), '/work')) AS ?besluit_work)
     }`;
 }
+
+export const transformationQueries = [
+  buildResourceInsertQuery,
+  buildTitleInsertQuery,
+  buildDescriptionInsertQuery,
+  buildDateInsertQuery,
+  buildLanguageInsertQuery,
+  buildContentInsertQuery,
+  buildCreatorInsertQuery,
+  buildContributorInsertQuery,
+];
