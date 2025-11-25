@@ -6,19 +6,25 @@ import {
 } from "./environment";
 
 const prefixes = `
-PREFIX besluit: <http://data.vlaanderen.be/ns/besluit#>
-PREFIX eli:     <http://data.europa.eu/eli/ontology#>
-PREFIX dcterms: <http://purl.org/dc/terms/>
-PREFIX prov:    <http://www.w3.org/ns/prov#>
-PREFIX epvoc:   <https://data.europarl.europa.eu/def/epvoc#>
-`;
+  PREFIX besluit: <http://data.vlaanderen.be/ns/besluit#>
+  PREFIX eli:     <http://data.europa.eu/eli/ontology#>
+  PREFIX dcterms: <http://purl.org/dc/terms/>
+  PREFIX prov:    <http://www.w3.org/ns/prov#>
+  PREFIX epvoc:   <https://data.europarl.europa.eu/def/epvoc#>`;
 
 const inputResourcesGraph = sparqlEscapeUri(INPUT_RESOURCES_GRAPH);
 const inputDataGraph = sparqlEscapeUri(INPUT_DATA_GRAPH);
 const outputGraph = sparqlEscapeUri(OUTPUT_GRAPH);
 
-function buildResourceInsertQuery(limit, offset) {
-  return `${prefixes}
+function buildResourceQueries(limit, offset) {
+  const count = `${prefixes}
+    SELECT (COUNT(*) AS ?count) WHERE {
+      GRAPH <${inputResourcesGraph}> {
+        ?besluit a besluit:Besluit .
+      }
+    }`;
+
+  const insert = `${prefixes}
     INSERT {
       GRAPH <${outputGraph}> {
         ?besluit a eli:Expression, eli:LegalExpression ;
@@ -39,10 +45,22 @@ function buildResourceInsertQuery(limit, offset) {
       BIND(URI(CONCAT(STR(?besluit), '/work')) AS ?besluit_work)
       BIND(NOW() AS ?now)
     }`;
+
+  return { count, insert };
 }
 
-function buildTitleInsertQuery(limit, offset) {
-  return `${prefixes}
+function buildTitleQueries(limit, offset) {
+  const count = `${prefixes}
+    SELECT (COUNT(*) AS ?count) WHERE {
+      GRAPH <${inputResourcesGraph}> {
+        ?besluit a besluit:Besluit .
+      }
+      GRAPH <${inputDataGraph}> {
+        ?besluit eli:title ?title .
+      }
+    }`;
+
+  const insert = `${prefixes}
     INSERT {
       GRAPH <${outputGraph}> {
         ?besluit eli:title ?title_nl ;
@@ -63,10 +81,22 @@ function buildTitleInsertQuery(limit, offset) {
       BIND(URI(CONCAT(STR(?besluit), '/work')) AS ?besluit_work)
       BIND(STRLANG(STR(?title), "nl") AS ?title_nl)
     }`;
+
+  return { count, insert };
 }
 
-function buildDescriptionInsertQuery(limit, offset) {
-  return `${prefixes}
+function buildDescriptionQueries(limit, offset) {
+  const count = `${prefixes}
+    SELECT (COUNT(*) AS ?count) WHERE {
+      GRAPH <${inputResourcesGraph}> {
+        ?besluit a besluit:Besluit .
+      }
+      GRAPH <${inputDataGraph}> {
+        ?besluit eli:description ?description .
+      }
+    }`;
+
+  const insert = `${prefixes}
     INSERT {
       GRAPH <${outputGraph}> {
         ?besluit eli:description ?description_nl ;
@@ -85,10 +115,22 @@ function buildDescriptionInsertQuery(limit, offset) {
       }
       BIND(STRLANG(STR(?description), "nl") AS ?description_nl)
     }`;
+
+  return { count, insert };
 }
 
-function buildDateInsertQuery(limit, offset) {
-  return `${prefixes}
+function buildDateQueries(limit, offset) {
+  const count = `${prefixes}
+    SELECT (COUNT(*) AS ?count) WHERE {
+      GRAPH <${inputResourcesGraph}> {
+        ?besluit a besluit:Besluit .
+      }
+      GRAPH <${inputDataGraph}> {
+        ?besluit eli:date_publication ?date .
+      }
+    }`;
+
+  const insert = `${prefixes}
     INSERT {
       GRAPH <${outputGraph}> {
         ?besluit_work eli:date_document ?date_parsed ;
@@ -108,10 +150,22 @@ function buildDateInsertQuery(limit, offset) {
       BIND(URI(CONCAT(STR(?besluit), '/work')) AS ?besluit_work)
       BIND(xsd:date(?date) AS ?date_parsed)
     }`;
+
+  return { count, insert };
 }
 
-function buildLanguageInsertQuery(limit, offset) {
-  return `${prefixes}
+function buildLanguageQueries(limit, offset) {
+  const count = `${prefixes}
+    SELECT (COUNT(*) AS ?count) WHERE {
+      GRAPH <${inputResourcesGraph}> {
+        ?besluit a besluit:Besluit .
+      }
+      GRAPH <${inputDataGraph}> {
+        ?besluit eli:language ?language .
+      }
+    }`;
+
+  const insert = `${prefixes}
     INSERT {
       GRAPH <${outputGraph}> {
         ?besluit eli:language ?language_parsed .
@@ -129,10 +183,22 @@ function buildLanguageInsertQuery(limit, offset) {
       }
       BIND(COALESCE(?language, <http://publications.europa.eu/resource/authority/language/NLD>) AS ?language_parsed)
     }`;
+
+  return { count, insert };
 }
 
-function buildContentInsertQuery(limit, offset) {
-  return `${prefixes}
+function buildContentQueries(limit, offset) {
+  const count = `${prefixes}
+    SELECT (COUNT(*) AS ?count) WHERE {
+      GRAPH <${inputResourcesGraph}> {
+        ?besluit a besluit:Besluit .
+      }
+      GRAPH <${inputDataGraph}> {
+        ?besluit prov:value ?content .
+      }
+    }`;
+
+  const insert = `${prefixes}
     INSERT {
       GRAPH <${outputGraph}> {
           ?besluit epvoc:expressionContent ?content_nl .
@@ -150,10 +216,22 @@ function buildContentInsertQuery(limit, offset) {
       }
       BIND(STRLANG(STR(?content), "nl") AS ?content_nl)
     }`;
+
+  return { count, insert };
 }
 
-function buildCreatorInsertQuery(limit, offset) {
-  return `${prefixes}
+function buildCreatorQueries(limit, offset) {
+  const count = `${prefixes}
+    SELECT (COUNT(*) AS ?count) WHERE {
+      GRAPH <${inputResourcesGraph}> {
+        ?besluit a besluit:Besluit .
+      }
+      GRAPH <${inputDataGraph}> {
+        ?besluit ^prov:generated / dcterms:subject / ^besluit:behandelt / besluit:isGehoudenDoor ?bestuursorgaan .
+      }
+    }`;
+
+  const insert = `${prefixes}
     INSERT {
       GRAPH <${outputGraph}> {
           ?besluit_work eli:passed_by ?bestuursorgaan ;
@@ -172,10 +250,25 @@ function buildCreatorInsertQuery(limit, offset) {
       }
       BIND(URI(CONCAT(STR(?besluit), '/work')) AS ?besluit_work)
     }`;
+
+  return { count, insert };
 }
 
-function buildContributorInsertQuery(limit, offset) {
-  return `${prefixes}
+function buildContributorQueries(limit, offset) {
+  const count = `${prefixes}
+    SELECT (COUNT(*) AS ?count) WHERE {
+      GRAPH <${inputResourcesGraph}> {
+        ?besluit a besluit:Besluit .
+      }
+      GRAPH <${inputDataGraph}> {
+        ?besluit ^prov:generated ?behandeling .
+        OPTIONAL { ?behandeling besluit:heeftAanwezige ?aanwezige . }
+        OPTIONAL { ?behandeling besluit:heeftSecretaris ?secretaris . }
+        OPTIONAL { ?behandeling besluit:heeftVoorzitter ?voorzitter . }
+      }
+    }`;
+
+  const insert = `${prefixes}
     INSERT {
       GRAPH <${outputGraph}> {
           ?besluit_work dcterms:contributor ?aanwezige, ?secretaris, ?voorzitter .
@@ -196,15 +289,17 @@ function buildContributorInsertQuery(limit, offset) {
       }
       BIND(URI(CONCAT(STR(?besluit), '/work')) AS ?besluit_work)
     }`;
+
+  return { count, insert };
 }
 
 export const transformationQueries = [
-  buildResourceInsertQuery,
-  buildTitleInsertQuery,
-  buildDescriptionInsertQuery,
-  buildDateInsertQuery,
-  buildLanguageInsertQuery,
-  buildContentInsertQuery,
-  buildCreatorInsertQuery,
-  buildContributorInsertQuery,
+  buildResourceQueries,
+  buildTitleQueries,
+  buildDescriptionQueries,
+  buildDateQueries,
+  buildLanguageQueries,
+  buildContentQueries,
+  buildCreatorQueries,
+  buildContributorQueries,
 ];
