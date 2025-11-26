@@ -70,9 +70,13 @@ async function transformAndInsertTriplesForKey(queryKey, total) {
   for (let offset = 0; offset < total; offset += BATCH_SIZE) {
     const insertQuery = buildInsertQuery(BATCH_SIZE, offset);
 
+    const progress = Math.min(((offset + BATCH_SIZE) / total) * 100, 100);
     console.info(
-      `[${queryKey}] Executing transformation (limit=${BATCH_SIZE}, offset=${offset}).`
+      `[${queryKey}] Executing transformation (limit=${BATCH_SIZE}, offset=${offset}, progress=${progress.toFixed(
+        2
+      )}%).`
     );
+
     await updateSudo(insertQuery);
     await sleep();
   }
