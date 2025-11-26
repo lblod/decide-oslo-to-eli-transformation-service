@@ -19,14 +19,14 @@ const outputGraph = sparqlEscapeUri(OUTPUT_GRAPH);
 const resourceQueries = {
   count: `${prefixes}
     SELECT (COUNT(*) AS ?count) WHERE {
-      GRAPH <${inputResourcesGraph}> {
+      GRAPH ${inputResourcesGraph} {
         ?besluit a besluit:Besluit .
       }
     }`,
 
   insert: (limit, offset) => `${prefixes}
     INSERT {
-      GRAPH <${outputGraph}> {
+      GRAPH ${outputGraph} {
         ?besluit a eli:Expression, eli:LegalExpression ;
                  dcterms:created ?now ;
                  dcterms:modified ?now .
@@ -37,7 +37,7 @@ const resourceQueries = {
     } WHERE {
       {
         SELECT * WHERE {
-          GRAPH <${inputResourcesGraph}> {
+          GRAPH ${inputResourcesGraph} {
             ?besluit a besluit:Besluit .
           }
         } LIMIT ${limit} OFFSET ${offset}
@@ -50,17 +50,17 @@ const resourceQueries = {
 const titleQueries = {
   count: `${prefixes}
     SELECT (COUNT(*) AS ?count) WHERE {
-      GRAPH <${inputResourcesGraph}> {
+      GRAPH ${inputResourcesGraph} {
         ?besluit a besluit:Besluit .
       }
-      GRAPH <${inputDataGraph}> {
+      GRAPH ${inputDataGraph} {
         ?besluit eli:title ?title .
       }
     }`,
 
   insert: (limit, offset) => `${prefixes}
     INSERT {
-      GRAPH <${outputGraph}> {
+      GRAPH ${outputGraph} {
         ?besluit eli:title ?title_nl ;
                  dcterms:title ?title_nl .
         ?besluit_work dcterms:title ?title_nl .
@@ -68,10 +68,10 @@ const titleQueries = {
     } WHERE {
       {
         SELECT * WHERE {
-          GRAPH <${inputResourcesGraph}> {
+          GRAPH ${inputResourcesGraph} {
             ?besluit a besluit:Besluit .
           }
-          GRAPH <${inputDataGraph}> {
+          GRAPH ${inputDataGraph} {
             ?besluit eli:title ?title .
           }
         } LIMIT ${limit} OFFSET ${offset}
@@ -84,27 +84,27 @@ const titleQueries = {
 const descriptionQueries = {
   count: `${prefixes}
     SELECT (COUNT(*) AS ?count) WHERE {
-      GRAPH <${inputResourcesGraph}> {
+      GRAPH ${inputResourcesGraph} {
         ?besluit a besluit:Besluit .
       }
-      GRAPH <${inputDataGraph}> {
+      GRAPH ${inputDataGraph} {
         ?besluit eli:description ?description .
       }
     }`,
 
   insert: (limit, offset) => `${prefixes}
     INSERT {
-      GRAPH <${outputGraph}> {
+      GRAPH ${outputGraph} {
         ?besluit eli:description ?description_nl ;
                  dcterms:description ?description_nl .
       }
     } WHERE {
       {
         SELECT * WHERE {
-          GRAPH <${inputResourcesGraph}> {
+          GRAPH ${inputResourcesGraph} {
             ?besluit a besluit:Besluit .
           }
-          GRAPH <${inputDataGraph}> {
+          GRAPH ${inputDataGraph} {
             ?besluit eli:description ?description .
           }
         } LIMIT ${limit} OFFSET ${offset}
@@ -116,27 +116,27 @@ const descriptionQueries = {
 const dateQueries = {
   count: `${prefixes}
     SELECT (COUNT(*) AS ?count) WHERE {
-      GRAPH <${inputResourcesGraph}> {
+      GRAPH ${inputResourcesGraph} {
         ?besluit a besluit:Besluit .
       }
-      GRAPH <${inputDataGraph}> {
+      GRAPH ${inputDataGraph} {
         ?besluit eli:date_publication ?date .
       }
     }`,
 
   insert: (limit, offset) => `${prefixes}
     INSERT {
-      GRAPH <${outputGraph}> {
+      GRAPH ${outputGraph} {
         ?besluit_work eli:date_document ?date_parsed ;
                       dcterms:date ?date_parsed .
       }
     } WHERE {
       {
         SELECT * WHERE {
-          GRAPH <${inputResourcesGraph}> {
+          GRAPH ${inputResourcesGraph} {
             ?besluit a besluit:Besluit .
           }
-          GRAPH <${inputDataGraph}> {
+          GRAPH ${inputDataGraph} {
             ?besluit eli:date_publication ?date .
           }
         } LIMIT ${limit} OFFSET ${offset}
@@ -149,26 +149,26 @@ const dateQueries = {
 const languageQueries = {
   count: `${prefixes}
     SELECT (COUNT(*) AS ?count) WHERE {
-      GRAPH <${inputResourcesGraph}> {
+      GRAPH ${inputResourcesGraph} {
         ?besluit a besluit:Besluit .
       }
-      GRAPH <${inputDataGraph}> {
+      GRAPH ${inputDataGraph} {
         ?besluit eli:language ?language .
       }
     }`,
 
   insert: (limit, offset) => `${prefixes}
     INSERT {
-      GRAPH <${outputGraph}> {
+      GRAPH ${outputGraph} {
         ?besluit eli:language ?language_parsed .
       }
     } WHERE {
       {
         SELECT * WHERE {
-          GRAPH <${inputResourcesGraph}> {
+          GRAPH ${inputResourcesGraph} {
             ?besluit a besluit:Besluit .
           }
-          GRAPH <${inputDataGraph}> {
+          GRAPH ${inputDataGraph} {
             ?besluit eli:language ?language .
           }
         } LIMIT ${limit} OFFSET ${offset}
@@ -180,26 +180,26 @@ const languageQueries = {
 const contentQueries = {
   count: `${prefixes}
     SELECT (COUNT(*) AS ?count) WHERE {
-      GRAPH <${inputResourcesGraph}> {
+      GRAPH ${inputResourcesGraph} {
         ?besluit a besluit:Besluit .
       }
-      GRAPH <${inputDataGraph}> {
+      GRAPH ${inputDataGraph} {
         ?besluit prov:value ?content .
       }
     }`,
 
   insert: (limit, offset) => `${prefixes}
     INSERT {
-      GRAPH <${outputGraph}> {
+      GRAPH ${outputGraph} {
           ?besluit epvoc:expressionContent ?content_nl .
       }
     } WHERE {
       {
         SELECT * WHERE {
-          GRAPH <${inputResourcesGraph}> {
+          GRAPH ${inputResourcesGraph} {
             ?besluit a besluit:Besluit .
           }
-          GRAPH <${inputDataGraph}> {
+          GRAPH ${inputDataGraph} {
             ?besluit prov:value ?content .
           }
         } LIMIT ${limit} OFFSET ${offset}
@@ -211,27 +211,27 @@ const contentQueries = {
 const creatorQueries = {
   count: `${prefixes}
     SELECT (COUNT(*) AS ?count) WHERE {
-      GRAPH <${inputResourcesGraph}> {
+      GRAPH ${inputResourcesGraph} {
         ?besluit a besluit:Besluit .
       }
-      GRAPH <${inputDataGraph}> {
+      GRAPH ${inputDataGraph} {
         ?besluit ^prov:generated / dcterms:subject / ^besluit:behandelt / besluit:isGehoudenDoor ?bestuursorgaan .
       }
     }`,
 
   insert: (limit, offset) => `${prefixes}
     INSERT {
-      GRAPH <${outputGraph}> {
+      GRAPH ${outputGraph} {
           ?besluit_work eli:passed_by ?bestuursorgaan ;
                         dcterms:creator ?bestuursorgaan .
       }
     } WHERE {
       {
         SELECT * WHERE {
-          GRAPH <${inputResourcesGraph}> {
+          GRAPH ${inputResourcesGraph} {
             ?besluit a besluit:Besluit .
           }
-          GRAPH <${inputDataGraph}> {
+          GRAPH ${inputDataGraph} {
             ?besluit ^prov:generated / dcterms:subject / ^besluit:behandelt / besluit:isGehoudenDoor ?bestuursorgaan .
           }
         } LIMIT ${limit} OFFSET ${offset}
@@ -243,10 +243,10 @@ const creatorQueries = {
 const contributorQueries = {
   count: `${prefixes}
     SELECT (COUNT(*) AS ?count) WHERE {
-      GRAPH <${inputResourcesGraph}> {
+      GRAPH ${inputResourcesGraph} {
         ?besluit a besluit:Besluit .
       }
-      GRAPH <${inputDataGraph}> {
+      GRAPH ${inputDataGraph} {
         ?besluit ^prov:generated ?behandeling .
         OPTIONAL { ?behandeling besluit:heeftAanwezige ?aanwezige . }
         OPTIONAL { ?behandeling besluit:heeftSecretaris ?secretaris . }
@@ -256,16 +256,16 @@ const contributorQueries = {
 
   insert: (limit, offset) => `${prefixes}
     INSERT {
-      GRAPH <${outputGraph}> {
+      GRAPH ${outputGraph} {
           ?besluit_work dcterms:contributor ?aanwezige, ?secretaris, ?voorzitter .
       }
     } WHERE {
       {
         SELECT * WHERE {
-          GRAPH <${inputResourcesGraph}> {
+          GRAPH ${inputResourcesGraph} {
             ?besluit a besluit:Besluit .
           }
-          GRAPH <${inputDataGraph}> {
+          GRAPH ${inputDataGraph} {
             ?besluit ^prov:generated ?behandeling .
             OPTIONAL { ?behandeling besluit:heeftAanwezige ?aanwezige . }
             OPTIONAL { ?behandeling besluit:heeftSecretaris ?secretaris . }
