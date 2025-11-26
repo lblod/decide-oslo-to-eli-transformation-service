@@ -1,6 +1,6 @@
 import { sparqlEscapeUri } from "mu";
 import {
-  INPUT_RESOURCES_GRAPH,
+  INPUT_DECISION_RESOURCES_GRAPH,
   INPUT_DATA_GRAPH,
   OUTPUT_GRAPH,
 } from "./environment";
@@ -12,7 +12,7 @@ const prefixes = `
   PREFIX prov:    <http://www.w3.org/ns/prov#>
   PREFIX epvoc:   <https://data.europarl.europa.eu/def/epvoc#>`;
 
-const inputResourcesGraph = sparqlEscapeUri(INPUT_RESOURCES_GRAPH);
+const inputResourcesGraph = sparqlEscapeUri(INPUT_DECISION_RESOURCES_GRAPH);
 const inputDataGraph = sparqlEscapeUri(INPUT_DATA_GRAPH);
 const outputGraph = sparqlEscapeUri(OUTPUT_GRAPH);
 
