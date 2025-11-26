@@ -12,7 +12,7 @@ app.use(
   })
 );
 
-app.post("/extract-subjects", async (req, res, next) => {
+app.post("/transform", async (_, res, next) => {
   try {
     transformAndInsertTriples().catch((error) =>
       console.error("Transformation flow failed unexpectedly.", error)
