@@ -4,9 +4,8 @@ export const SLEEP_BETWEEN_BATCHES =
 
 export const INPUT_RESOURCES_GRAPH =
   process.env.INPUT_RESOURCES_GRAPH ||
-  "http://mu.semte.ch/graphs/oslo-decisions/ghent/besluit";
+  "http://mu.semte.ch/graphs/oslo-decisions";
 export const INPUT_DATA_GRAPH =
-  process.env.INPUT_DATA_GRAPH ||
-  "http://mu.semte.ch/graphs/oslo-decisions/landing";
+  process.env.INPUT_DATA_GRAPH || "http://mu.semte.ch/graphs/oslo-decisions";
 export const OUTPUT_GRAPH =
-  process.env.OUTPUT_GRAPH || "http://mu.semte.ch/graphs/eli-decisions/ghent";
+  process.env.OUTPUT_GRAPH || "http://mu.semte.ch/graphs/eli-decisions";
