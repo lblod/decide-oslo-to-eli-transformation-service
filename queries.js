@@ -16,15 +16,15 @@ const inputResourcesGraph = sparqlEscapeUri(INPUT_RESOURCES_GRAPH);
 const inputDataGraph = sparqlEscapeUri(INPUT_DATA_GRAPH);
 const outputGraph = sparqlEscapeUri(OUTPUT_GRAPH);
 
-function buildResourceQueries(limit, offset) {
-  const count = `${prefixes}
+const resourceQueries = {
+  count: `${prefixes}
     SELECT (COUNT(*) AS ?count) WHERE {
       GRAPH <${inputResourcesGraph}> {
         ?besluit a besluit:Besluit .
       }
-    }`;
+    }`,
 
-  const insert = `${prefixes}
+  insert: (limit, offset) => `${prefixes}
     INSERT {
       GRAPH <${outputGraph}> {
         ?besluit a eli:Expression, eli:LegalExpression ;
@@ -44,13 +44,11 @@ function buildResourceQueries(limit, offset) {
       }
       BIND(URI(CONCAT(STR(?besluit), '/work')) AS ?besluit_work)
       BIND(NOW() AS ?now)
-    }`;
+    }`,
+};
 
-  return { count, insert };
-}
-
-function buildTitleQueries(limit, offset) {
-  const count = `${prefixes}
+const titleQueries = {
+  count: `${prefixes}
     SELECT (COUNT(*) AS ?count) WHERE {
       GRAPH <${inputResourcesGraph}> {
         ?besluit a besluit:Besluit .
@@ -58,9 +56,9 @@ function buildTitleQueries(limit, offset) {
       GRAPH <${inputDataGraph}> {
         ?besluit eli:title ?title .
       }
-    }`;
+    }`,
 
-  const insert = `${prefixes}
+  insert: (limit, offset) => `${prefixes}
     INSERT {
       GRAPH <${outputGraph}> {
         ?besluit eli:title ?title_nl ;
@@ -80,13 +78,11 @@ function buildTitleQueries(limit, offset) {
       }
       BIND(URI(CONCAT(STR(?besluit), '/work')) AS ?besluit_work)
       BIND(STRLANG(STR(?title), "nl") AS ?title_nl)
-    }`;
+    }`,
+};
 
-  return { count, insert };
-}
-
-function buildDescriptionQueries(limit, offset) {
-  const count = `${prefixes}
+const descriptionQueries = {
+  count: `${prefixes}
     SELECT (COUNT(*) AS ?count) WHERE {
       GRAPH <${inputResourcesGraph}> {
         ?besluit a besluit:Besluit .
@@ -94,9 +90,9 @@ function buildDescriptionQueries(limit, offset) {
       GRAPH <${inputDataGraph}> {
         ?besluit eli:description ?description .
       }
-    }`;
+    }`,
 
-  const insert = `${prefixes}
+  insert: (limit, offset) => `${prefixes}
     INSERT {
       GRAPH <${outputGraph}> {
         ?besluit eli:description ?description_nl ;
@@ -114,13 +110,11 @@ function buildDescriptionQueries(limit, offset) {
         } LIMIT ${limit} OFFSET ${offset}
       }
       BIND(STRLANG(STR(?description), "nl") AS ?description_nl)
-    }`;
+    }`,
+};
 
-  return { count, insert };
-}
-
-function buildDateQueries(limit, offset) {
-  const count = `${prefixes}
+const dateQueries = {
+  count: `${prefixes}
     SELECT (COUNT(*) AS ?count) WHERE {
       GRAPH <${inputResourcesGraph}> {
         ?besluit a besluit:Besluit .
@@ -128,9 +122,9 @@ function buildDateQueries(limit, offset) {
       GRAPH <${inputDataGraph}> {
         ?besluit eli:date_publication ?date .
       }
-    }`;
+    }`,
 
-  const insert = `${prefixes}
+  insert: (limit, offset) => `${prefixes}
     INSERT {
       GRAPH <${outputGraph}> {
         ?besluit_work eli:date_document ?date_parsed ;
@@ -149,13 +143,11 @@ function buildDateQueries(limit, offset) {
       }
       BIND(URI(CONCAT(STR(?besluit), '/work')) AS ?besluit_work)
       BIND(xsd:date(?date) AS ?date_parsed)
-    }`;
+    }`,
+};
 
-  return { count, insert };
-}
-
-function buildLanguageQueries(limit, offset) {
-  const count = `${prefixes}
+const languageQueries = {
+  count: `${prefixes}
     SELECT (COUNT(*) AS ?count) WHERE {
       GRAPH <${inputResourcesGraph}> {
         ?besluit a besluit:Besluit .
@@ -163,9 +155,9 @@ function buildLanguageQueries(limit, offset) {
       GRAPH <${inputDataGraph}> {
         ?besluit eli:language ?language .
       }
-    }`;
+    }`,
 
-  const insert = `${prefixes}
+  insert: (limit, offset) => `${prefixes}
     INSERT {
       GRAPH <${outputGraph}> {
         ?besluit eli:language ?language_parsed .
@@ -182,13 +174,11 @@ function buildLanguageQueries(limit, offset) {
         } LIMIT ${limit} OFFSET ${offset}
       }
       BIND(COALESCE(?language, <http://publications.europa.eu/resource/authority/language/NLD>) AS ?language_parsed)
-    }`;
+    }`,
+};
 
-  return { count, insert };
-}
-
-function buildContentQueries(limit, offset) {
-  const count = `${prefixes}
+const contentQueries = {
+  count: `${prefixes}
     SELECT (COUNT(*) AS ?count) WHERE {
       GRAPH <${inputResourcesGraph}> {
         ?besluit a besluit:Besluit .
@@ -196,9 +186,9 @@ function buildContentQueries(limit, offset) {
       GRAPH <${inputDataGraph}> {
         ?besluit prov:value ?content .
       }
-    }`;
+    }`,
 
-  const insert = `${prefixes}
+  insert: (limit, offset) => `${prefixes}
     INSERT {
       GRAPH <${outputGraph}> {
           ?besluit epvoc:expressionContent ?content_nl .
@@ -215,13 +205,11 @@ function buildContentQueries(limit, offset) {
         } LIMIT ${limit} OFFSET ${offset}
       }
       BIND(STRLANG(STR(?content), "nl") AS ?content_nl)
-    }`;
+    }`,
+};
 
-  return { count, insert };
-}
-
-function buildCreatorQueries(limit, offset) {
-  const count = `${prefixes}
+const creatorQueries = {
+  count: `${prefixes}
     SELECT (COUNT(*) AS ?count) WHERE {
       GRAPH <${inputResourcesGraph}> {
         ?besluit a besluit:Besluit .
@@ -229,9 +217,9 @@ function buildCreatorQueries(limit, offset) {
       GRAPH <${inputDataGraph}> {
         ?besluit ^prov:generated / dcterms:subject / ^besluit:behandelt / besluit:isGehoudenDoor ?bestuursorgaan .
       }
-    }`;
+    }`,
 
-  const insert = `${prefixes}
+  insert: (limit, offset) => `${prefixes}
     INSERT {
       GRAPH <${outputGraph}> {
           ?besluit_work eli:passed_by ?bestuursorgaan ;
@@ -249,13 +237,11 @@ function buildCreatorQueries(limit, offset) {
         } LIMIT ${limit} OFFSET ${offset}
       }
       BIND(URI(CONCAT(STR(?besluit), '/work')) AS ?besluit_work)
-    }`;
+    }`,
+};
 
-  return { count, insert };
-}
-
-function buildContributorQueries(limit, offset) {
-  const count = `${prefixes}
+const contributorQueries = {
+  count: `${prefixes}
     SELECT (COUNT(*) AS ?count) WHERE {
       GRAPH <${inputResourcesGraph}> {
         ?besluit a besluit:Besluit .
@@ -266,9 +252,9 @@ function buildContributorQueries(limit, offset) {
         OPTIONAL { ?behandeling besluit:heeftSecretaris ?secretaris . }
         OPTIONAL { ?behandeling besluit:heeftVoorzitter ?voorzitter . }
       }
-    }`;
+    }`,
 
-  const insert = `${prefixes}
+  insert: (limit, offset) => `${prefixes}
     INSERT {
       GRAPH <${outputGraph}> {
           ?besluit_work dcterms:contributor ?aanwezige, ?secretaris, ?voorzitter .
@@ -288,18 +274,16 @@ function buildContributorQueries(limit, offset) {
         } LIMIT ${limit} OFFSET ${offset}
       }
       BIND(URI(CONCAT(STR(?besluit), '/work')) AS ?besluit_work)
-    }`;
-
-  return { count, insert };
-}
+    }`,
+};
 
 export const transformationQueries = [
-  buildResourceQueries,
-  buildTitleQueries,
-  buildDescriptionQueries,
-  buildDateQueries,
-  buildLanguageQueries,
-  buildContentQueries,
-  buildCreatorQueries,
-  buildContributorQueries,
+  resourceQueries,
+  titleQueries,
+  descriptionQueries,
+  dateQueries,
+  languageQueries,
+  contentQueries,
+  creatorQueries,
+  contributorQueries,
 ];
