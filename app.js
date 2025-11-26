@@ -1,6 +1,6 @@
 import { app } from "mu";
 import bodyParser from "body-parser";
-import { updateSudo } from "@lblod/mu-auth-sudo";
+import { querySudo, updateSudo } from "@lblod/mu-auth-sudo";
 import { transformationQueries } from "./queries";
 import { BATCH_SIZE, SLEEP_BETWEEN_BATCHES } from "./environment";
 
@@ -38,14 +38,44 @@ app.post("/extract-subjects", async (req, res, next) => {
 });
 
 async function transformAndInsertTriples() {
-  // Loop over queries in transformationQueries
-  // For each, call transformAndInsertTriplesForQuery()
+  for (const queryKey of Object.keys(transformationQueries)) {
+    const total = await fetchCountForKey(queryKey);
+    if (!total) {
+      console.info(`[${queryKey}] Skipping transformation, nothing to insert.`);
+      continue;
+    }
+
+    await transformAndInsertTriplesForKey(queryKey, total);
+  }
 }
 
-async function transformAndInsertTriplesForQuery(insertQuery) {
-  // Run insert query multiple times using updateSudo and BATCH_SIZE
-  // Increase offset
-  // Call sleep() after each run
+async function fetchCountForKey(queryKey) {
+  const { count: countQuery } = transformationQueries[queryKey];
+
+  console.info(`[${queryKey}] Counting properties to transform.`);
+  const response = await querySudo(countQuery);
+  await sleep();
+
+  const bindings = response?.results?.bindings ?? [];
+  if (!bindings.length) return 0;
+
+  const countValue = bindings[0]?.count?.value;
+  const parsed = parseInt(countValue, 10);
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
+async function transformAndInsertTriplesForKey(queryKey, total) {
+  const { insert: buildInsertQuery } = transformationQueries[queryKey];
+
+  for (let offset = 0; offset < total; offset += BATCH_SIZE) {
+    const insertQuery = buildInsertQuery(BATCH_SIZE, offset);
+
+    console.info(
+      `[${queryKey}] Executing transformation (limit=${BATCH_SIZE}, offset=${offset}).`
+    );
+    await updateSudo(insertQuery);
+    await sleep();
+  }
 }
 
 async function sleep() {

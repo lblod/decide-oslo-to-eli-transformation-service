@@ -277,13 +277,13 @@ const contributorQueries = {
     }`,
 };
 
-export const transformationQueries = [
-  resourceQueries,
-  titleQueries,
-  descriptionQueries,
-  dateQueries,
-  languageQueries,
-  contentQueries,
-  creatorQueries,
-  contributorQueries,
-];
+export const transformationQueries = {
+  resource: resourceQueries,
+  title: titleQueries,
+  description: descriptionQueries,
+  date: dateQueries,
+  language: languageQueries,
+  content: contentQueries,
+  creator: creatorQueries,
+  contributor: contributorQueries,
+};
