@@ -61,8 +61,7 @@ const titleQueries = {
   insert: (limit, offset) => `${prefixes}
     INSERT {
       GRAPH ${outputGraph} {
-        ?besluit eli:title ?title_nl ;
-                 dcterms:title ?title_nl .
+        ?besluit eli:title ?title_nl .
         ?besluit_work dcterms:title ?title_nl .
       }
     } WHERE {
@@ -127,8 +126,7 @@ const dateQueries = {
   insert: (limit, offset) => `${prefixes}
     INSERT {
       GRAPH ${outputGraph} {
-        ?besluit_work eli:date_document ?date_parsed ;
-                      dcterms:date ?date_parsed .
+        ?besluit_work eli:date_document ?date_parsed .
       }
     } WHERE {
       {
