@@ -171,7 +171,13 @@ const languageQueries = {
           }
         } LIMIT ${limit} OFFSET ${offset}
       }
-      BIND(COALESCE(?language, <http://publications.europa.eu/resource/authority/language/NLD>) AS ?language_parsed)
+      BIND(
+        IF(
+          !BOUND(?language) || !STRSTARTS(STR(?language), "http://publications.europa.eu/resource/authority/language/"),
+          <http://publications.europa.eu/resource/authority/language/NLD>,
+          ?language
+        ) AS ?language_parsed
+      )
     }`,
 };
 
