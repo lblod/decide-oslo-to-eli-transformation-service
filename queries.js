@@ -31,6 +31,7 @@ const resourceQueries = {
                  dcterms:created ?now ;
                  dcterms:modified ?now .
         ?besluit_work a eli:Work, eli:LegalResource ;
+                      eli:is_realized_by ?besluit ;
                       dcterms:created ?now ;
                       dcterms:modified ?now .
       }
