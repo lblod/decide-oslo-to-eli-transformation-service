@@ -1,0 +1,7 @@
+{
+  "name": "decide-oslo-to-eli-transformation-service",
+  "version": "0.0.1",
+  "dependencies": {
+    "@lblod/mu-auth-sudo": "^0.6.2"
+  }
+}
