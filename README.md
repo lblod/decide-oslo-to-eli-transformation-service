@@ -1,3 +1,6 @@
+> [!WARNING]  
+> Archived in favor of https://github.com/lblod/decide-harvester-transformation-service.
+
 # Decide - OSLO to ELI transformation service
 
 ## About
